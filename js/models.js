@@ -1,4 +1,7 @@
 class Game {
+    /*
+    new Game({id: 1, name: "Super Mario"})
+    */
     constructor(attributes) {
       let whitelist = ["id", "name"]
       whitelist.forEach(attr => this[attr] = attributes[attr])
@@ -22,7 +25,14 @@ class Game {
     static list() {
       return this.l ||= document.querySelector('#lists')
     }
-  
+  /*
+  Game.all() will return a promise for all of the game objects that we get from fetching the game
+  this collection will be stored locally in game.collection so we can refernce it after yhe 
+  intial call to Game.all() which will occur at the DOMContentLoaded event
+  */
+    static all() {
+        console.log('.all() was called')
+    }
     /*
     <div
     */
