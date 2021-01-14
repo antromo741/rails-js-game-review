@@ -15,6 +15,11 @@ ul {
 
 li {
   float: left;
+  border-right:1px solid #bbb;
+}
+
+li:last-child {
+  border-right: none;
 }
 
 li a, .dropbtn {
@@ -84,14 +89,24 @@ nothing until it is hovered */
   </li>
   
   <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+    <a href="javascript:void(0)" class="dropbtn">Nintendo</a>
     <div class="dropdown-content">
-      <a href="#">Link 1</a>
-      <a href="#">Link 2</a>
-      <a href="#">Link 3</a>
+      <a href="#">Gamecube</a>
+      <a href="#">Wii U</a>
+      <a href="#">Switch</a>
+    </div>
+  </li>
+
+  <li class="dropdown">
+    <a href="javascript:void(0)" class="dropbtn">Playstation</a>
+    <div class="dropdown-content">
+      <a href="#">PsVR</a>
+      <a href="#">Ps4</a>
+      <a href="#">Ps5</a>
     </div>
   </li>
  <li><a href="#contact">Contact</a></li>
+ <li style="float:right"><a href="#about">About</a></li>
 </ul>
 
 <h3>Dropdown Menu inside a Navigation Bar</h3>
