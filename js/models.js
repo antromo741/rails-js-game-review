@@ -31,7 +31,22 @@ class Game {
   intial call to Game.all() which will occur at the DOMContentLoaded event
   */
     static all() {
-        console.log('.all() was called')
+        return fetch("http://localhost:3000/games", {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        })
+        .then(res => {
+            if(res.ok) {
+                return res.json() //returns a promise for body content that gets parsed s json
+            } else {
+                return res.text().then(error => Promise.reject(error)) // return a reject promise 
+            }
+        })
+        .then(gameArray => {
+            debugger
+        })
     }
     /*
     <div
