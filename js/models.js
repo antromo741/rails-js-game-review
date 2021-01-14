@@ -45,6 +45,8 @@ class Game {
             }
         })
         .then(gameArray => {
+          this.collection = gameArray.map(attrs => new Game(attrs))
+          console.log(this);
             debugger
         })
     }
@@ -52,7 +54,7 @@ class Game {
     <div
     */
     render() {
-  
+      this.element ||= document.createElement('li')
     }
   }
   
