@@ -65,7 +65,11 @@ class Game {
       let game = new Game(gameAttributes);
       this.collection.push(game);
       this.container().appendChild(game.render());
+      new FlashMessage({type: 'success', message: 'New list added succesfully'})
       return game;
+    })
+    .catch(error => {
+      new FlashMessage({type: 'error', message: error})
     })
   }
 
@@ -100,5 +104,29 @@ class Review {
   
   static container() {
     return this.c ||= document.querySelector("#reviews")
+  }
+}
+
+class FlashMessage {
+  constructor({type, message}) {
+    this.message = message;
+    this.color = type == "error" ? 'bg-red-200' : 'bg-blue-100';
+    this.render();
+  }
+
+  static container() {
+    return this.c ||= document.querySelector('#flash')
+  }
+
+  render() {
+    this.toggleMessage();
+    window.setTimeout(() => this.toggleMessage(), 5000);
+  }
+
+  toggleMessage() {
+    console.log(this);
+    FlashMessage.container().textContent = this.message;
+    FlashMessage.container().classList.toggle(this.color);
+    FlashMessage.container().classList.toggle('opacity-0'); 
   }
 }
