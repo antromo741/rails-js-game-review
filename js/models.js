@@ -69,7 +69,7 @@ class Game {
       return game;
     })
     .catch(error => {
-      new FlashMessage({type: 'error', message: error})
+      new FlashMessage({type: 'error', message: error});
     })
   }
 
@@ -80,7 +80,7 @@ class Game {
   this.nameLink ||= document.createElement('a');
   this.nameLink.classList.add(..."py-4 col-span-10 sm:col-span-4".split(" "));
   this.nameLink.textContent = this.name;
-  
+  if(!this.editLink){
   this.editLink ||= document.createElement('a');
   this.editLink.classList.add(..."my-4 text-right".split(" "));
   this.editLink.innerHTML = `<i class="fa fa-pencil-alt"></i>`;
@@ -88,12 +88,12 @@ class Game {
   this.deleteLink ||= document.createElement('a')
   this.deleteLink.classList.add(..."my-4 text-right".split(" "));
   this.deleteLink.innerHTML = `<i class="fa fa-trash-alt"></i>`;
-  
+   } 
   this.element.append(this.nameLink, this.editLink, this.deleteLink);
 
-  return this.element
-
+  return this.element;
   }
+
 
 }
 class Review {
