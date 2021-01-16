@@ -45,6 +45,10 @@ class Game {
     })
   }
 
+  static findById(id) {
+    return this.collection.find(game => game.id == id);
+  }
+
   static create(formData) {
     return fetch("http://localhost:3000/games", {
       method: 'POST', 
@@ -73,6 +77,40 @@ class Game {
     })
   }
 
+  show() {
+    return fetch(`http://localhost:3000/games/${this.id}`, {
+      method: 'GET', 
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => {
+        if(res.ok) {
+          return res.json()
+        } else {
+          return res.text().then(error => Promise.reject(error))
+        }
+      })
+      .then(({id, tasksAttributes}) => {
+        Review.loadByList(id, tasksAttributes)
+        this.markActive()
+      })
+      .catch(err => {
+        return res.text().then(error => Promise.reject(err))
+      })
+  }
+  
+  markActive() {
+    if(Game.activeList) {
+      Game.activeList.active = false;
+      Game.activeList.element.classList.replace('bg-green-400', 'bg-green-200');
+    }
+    Game.activeList = this;
+    this.active = true;
+    this.element.classList.replace('bg-green-200', 'bg-green-400');
+  }
+
   render() {
   this.element ||= document.createElement('li')
 
@@ -81,7 +119,7 @@ class Game {
   this.nameLink.classList.add(..."py-4 col-span-10 sm:col-span-4 selectGame".split(" "));
   this.nameLink.textContent = this.name;
   this.nameLink.dataset.gameId = this.id;
-  
+
   if(!this.editLink){
   this.editLink ||= document.createElement('a');
   this.editLink.classList.add(..."my-4 text-right".split(" "));

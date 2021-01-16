@@ -5,15 +5,15 @@ document.addEventListener('DOMContentLoaded', function(e) {
 document.addEventListener('click', function(e) {
     console.dir(e.target)
     let target = e.target;
-    if(taget.matches('.editGame')) {
-        let list = Game.findByID(target.dataset.gameId);
-        list.edit()
-    } else if (target.matches('.deleteGame')) {
-        let list = Game.findById(target.dataset.gameId);
-        list.delete();
-    } else if (target.matches('.selectGame')) {
+    if (target.matches(".selectGame")) {
         let list = Game.findById(target.dataset.gameId);
         list.show();
+    } else if (target.matches(".deleteGame")) {
+        let list = Game.findById(target.dataset.gameId);
+        list.delete();
+    } else if(taget.matches(".editGame")) {
+        let list = Game.findById(target.dataset.gameId);
+        list.edit()
     }
 })
 
