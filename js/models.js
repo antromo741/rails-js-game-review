@@ -92,29 +92,30 @@ class Game {
           return res.text().then(error => Promise.reject(error))
         }
       })
-      .then(({id, tasksAttributes}) => {
-        Review.loadByList(id, tasksAttributes)
+      .then(({id, reviewsAttributes}) => {
+        //Review.loadByList(id, reviewsAttributes)
         this.markActive()
       })
       .catch(err => {
         return res.text().then(error => Promise.reject(err))
       })
   }
-  
+
   markActive() {
     if(Game.activeList) {
       Game.activeList.active = false;
-      Game.activeList.element.classList.replace('bg-green-400', 'bg-green-200');
+      Game.activeList.element.classList.replace('bg-red-500', 'bg-green-200');
     }
     Game.activeList = this;
     this.active = true;
-    this.element.classList.replace('bg-green-200', 'bg-green-400');
+    this.element.classList.replace('bg-green-200', 'bg-red-500');
   }
 
   render() {
   this.element ||= document.createElement('li')
 
-  this.element.classList.add(..."my-2 px-4 bg-red-500 grid grid-cols-12 sm:grid-cols-6".split(" "));
+  this.element.classList.add(...`my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6`.split(" "));
+ 
   this.nameLink ||= document.createElement('a');
   this.nameLink.classList.add(..."py-4 col-span-10 sm:col-span-4 selectGame".split(" "));
   this.nameLink.textContent = this.name;
@@ -144,6 +145,15 @@ class Review {
   
   static container() {
     return this.c ||= document.querySelector("#reviews")
+  }
+
+  static loadByList(id, reviewsAttributes) {
+    Review.active_game_id = id;
+    let reviews = reviewsAttributes.map(reviewAttributes => new Review(reviewAttributes));
+    this.collection()[id] = reviews;
+    let rendered = reviews.map(review => review.render())
+    this.container().innerHTML = "";
+    this.container().append(...rendered)
   }
 }
 
