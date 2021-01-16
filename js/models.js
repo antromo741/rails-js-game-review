@@ -75,11 +75,13 @@ class Game {
 
   render() {
   this.element ||= document.createElement('li')
+
   this.element.classList.add(..."my-2 px-4 bg-red-500 grid grid-cols-12 sm:grid-cols-6".split(" "));
-  
   this.nameLink ||= document.createElement('a');
-  this.nameLink.classList.add(..."py-4 col-span-10 sm:col-span-4".split(" "));
+  this.nameLink.classList.add(..."py-4 col-span-10 sm:col-span-4 selectGame".split(" "));
   this.nameLink.textContent = this.name;
+  this.nameLink.dataset.gameId = this.id;
+  
   if(!this.editLink){
   this.editLink ||= document.createElement('a');
   this.editLink.classList.add(..."my-4 text-right".split(" "));

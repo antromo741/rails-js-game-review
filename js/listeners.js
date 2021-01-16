@@ -4,17 +4,36 @@ document.addEventListener('DOMContentLoaded', function(e) {
 
 document.addEventListener('click', function(e) {
     console.dir(e.target)
+    let target = e.target;
+    if(taget.matches('.editGame')) {
+        let list = Game.findByID(target.dataset.gameId);
+        list.edit()
+    } else if (target.matches('.deleteGame')) {
+        let list = Game.findById(target.dataset.gameId);
+        list.delete();
+    } else if (target.matches('.selectGame')) {
+        let list = Game.findById(target.dataset.gameId);
+        list.show();
+    }
 })
-
 
 document.addEventListener('submit', function(e) {
     let target = e.target;
     if(target.matches('#newGame')) {
         e.preventDefault();
-        let formData = {}
-        target.querySelectorAll('input').forEach(function(input) {
-            formData[input.name] = input.value;
-        })
-        Game.create(formData);
+        let nameInput = target.querySelector('input[name="name"]');
+        let formData = {
+            name: nameInput.value
+        };
+        Game.create({game: formData})
+        .then(() => nameInput.value = "");
+    } else if (target.matches('editGameForm')) {
+        e.preventDefault();
+        let nameInput = target.querySelector('input[name="name"]');
+        let formData = {
+          name: nameInput.value
+        };
+        let list = Game.findById(target.dataset.gameId);
+        list.update({game: formData});
     }
 })
