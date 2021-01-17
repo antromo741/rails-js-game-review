@@ -3,8 +3,9 @@ class Game {
   new Game({id: 1, name: "Super Mario"})
   */
   constructor(attributes) {
-      let whitelist = ["id", "name"]
+      let whitelist = ["id", "name", "active"]
       whitelist.forEach(attr => this[attr] = attributes[attr])
+      if(this.active) {Game.active = this;}
   }
   /*
   Game.container() returns a reference to this DOM node:
@@ -83,7 +84,7 @@ class Game {
 
   show() {
     return fetch(`http://localhost:3000/games/${this.id}`, {
-      method: 'GET', 
+      //method: 'GET', 
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -96,12 +97,12 @@ class Game {
           return res.text().then(error => Promise.reject(error))
         }
       })
-      .then(({id, reviewsAttributes}) => {
-        //Review.loadByList(id, reviewsAttributes)
+      .then(({game, reviews}) => {
+        //Review.loadByList(reviews, game.id)
         this.markActive()
       })
-      .catch(err => {
-        return res.text().then(error => Promise.reject(err))
+      .catch(error => {
+        new FlashMessage({type: 'error', message: error});
       })
   }
 
@@ -147,8 +148,48 @@ class Review {
       whitelist.forEach(attr => this[attr] = attributes[attr])
   }
   
+  static all() {
+    return this.collection ||= {};
+  }
+
   static container() {
     return this.c ||= document.querySelector("#reviews")
+  }
+
+  static create(formData) {
+    if(!Review.active_game_id){
+      return new FlashMessage({type: 'error', message: "Please select a game to review"});
+    }
+    return fetch("http://localhost:3000/reviews", {
+      method: 'POST', 
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({review: formData})
+    })
+    .then(res => {
+      if(res.ok) {
+        return res.json() //returns a promise for body content that gets parsed s json
+      } else {
+        return res.text().then(error => Promise.reject(error)) // return a reject promise 
+      }
+    })
+    .then(reviewAttributes => {
+      let review = new Review(reviewAttributes);
+      this.collection[this.active_game_id].push(review);
+      let rendered = review.render();
+      this.container().appendChild(rendered);
+     // new FlashMessage({type: 'success', message: 'New list added succesfully'})
+      return review;
+    })
+    .catch(error => {
+      new FlashMessage({type: 'error', message: error});
+    })
+  }
+
+  static findById(id) {
+    return this.collection()[Review.active_game_id].find(review => review.id == id);
   }
 
   static loadByList(id, reviewsAttributes) {
@@ -159,13 +200,10 @@ class Review {
     this.container().innerHTML = "";
     this.container().append(...rendered)
   }
+
   render() {
     this.element ||= document.createElement('li');
     this.element.classList.set("my-2 px-4 bg-green-200 grid grid-cols-12");
-
-    this.markCompleteLink ||= document.createElement('a');
-    this.markCompleteLink.classList.set("my-1 text-center");
-    this.markCompleteLink.innerHTML = `<i class="toggleComplete p-4 far ${this.completeIconClass()}" data-review-id="${this.id}"></i>`;
 
     this.nameSpan ||= document.createElement('span');
     this.nameSpan.classList.set("py-4 col-span-9");
@@ -179,7 +217,7 @@ class Review {
     this.deleteLink.classList.set("my-1 text-right");
     this.deleteLink.innerHTML = `<i class="deleteReview p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
 
-    this.element.append(this.markCompleteLink, this.nameSpan, this.editLink, this.deleteLink);
+    this.element.append(tthis.nameSpan, this.editLink, this.deleteLink);
 
     return this.element;
   }

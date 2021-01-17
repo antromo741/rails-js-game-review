@@ -3,37 +3,48 @@ document.addEventListener('DOMContentLoaded', function(e) {
 })
 
 document.addEventListener('click', function(e) {
-    console.dir(e.target)
     let target = e.target;
-    if (target.matches(".selectGame")) {
-        let list = Game.findById(target.dataset.gameId);
-        list.show();
-    } else if (target.matches(".deleteGame")) {
-        let list = Game.findById(target.dataset.gameId);
-        list.delete();
-    } else if(taget.matches(".editGame")) {
-        let list = Game.findById(target.dataset.gameId);
-        list.edit()
-    }
-})
+  
+    if(target.matches(".selectGame")) {
+      let game = Game.findById(target.dataset.gameId);
+      game.show();
+    } else if(target.matches(".deleteGame")) {
+      if(confirm("Are you sure you want to delete this game?")) {
+        let game = Game.findById(target.dataset.gameId);
+        game.delete();
+      }
+    } else if(target.matches(".editGame")) {
+      let game = Game.findById(target.dataset.gameId);
+      Modal.populate({title: "Edit Game", content: game.edit()})
+      Modal.toggle()
+    } else if(target.matches(".deleteGame")) {
+      if(confirm("Are you sure you want to delete this game?")) {
+        let game = Game.findById(target.dataset.gameId);
+        game.delete();
+      }
+    } else if(target.matches(".modal-close") || target.matches(".modal-overlay")) {
+      e.preventDefault();
+      Modal.toggle();
+    } 
+  })
 
 document.addEventListener('submit', function(e) {
     let target = e.target;
     if(target.matches('#newGame')) {
-        e.preventDefault();
-        let nameInput = target.querySelector('input[name="name"]');
-        let formData = {
-            name: nameInput.value
-        };
-        Game.create({game: formData})
-        .then(() => nameInput.value = "");
-    } else if (target.matches('editGameForm')) {
-        e.preventDefault();
-        let nameInput = target.querySelector('input[name="name"]');
-        let formData = {
-          name: nameInput.value
-        };
-        let list = Game.findById(target.dataset.gameId);
-        list.update({game: formData});
+      e.preventDefault();
+      Game.create(target.serialize())
+        .then(() => {
+          target.reset();
+          target.querySelector('input[name="name"]').blur();
+        });
+    } else if(target.matches('#newReviewForm')) {
+      e.preventDefault();
+      Review.create(target.serialize())
+        .then(() => target.reset());
+    } else if(target.matches('.editReviewForm')) {
+      e.preventDefault();
+      let review = review.findById(target.dataset.reviewId);
+      review.update(target.serialize())
+        //.then(() => Modal.toggle())
     }
-})
+  });
