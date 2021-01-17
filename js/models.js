@@ -17,6 +17,10 @@ class Game {
   static container() {
     return this.c ||= document.querySelector('#lists')
   }
+
+  static collection() {
+    return this.coll ||= {};
+  }
   
   /*
   Game.all() will return a promise for all of the game objects that we get from fetching the game
@@ -128,7 +132,7 @@ class Game {
   
   this.deleteLink ||= document.createElement('a')
   this.deleteLink.classList.add(..."my-4 text-right".split(" "));
-  this.deleteLink.innerHTML = `<i class="fa fa-trash-alt"></i>`;
+  this.deleteLink.innerHTML = `<i class="deleteGame fa fa-trash-alt" data-game-id="${this.id}"></i>`;
    } 
   this.element.append(this.nameLink, this.editLink, this.deleteLink);
 
@@ -155,7 +159,32 @@ class Review {
     this.container().innerHTML = "";
     this.container().append(...rendered)
   }
+  render() {
+    this.element ||= document.createElement('li');
+    this.element.classList.set("my-2 px-4 bg-green-200 grid grid-cols-12");
+
+    this.markCompleteLink ||= document.createElement('a');
+    this.markCompleteLink.classList.set("my-1 text-center");
+    this.markCompleteLink.innerHTML = `<i class="toggleComplete p-4 far ${this.completeIconClass()}" data-review-id="${this.id}"></i>`;
+
+    this.nameSpan ||= document.createElement('span');
+    this.nameSpan.classList.set("py-4 col-span-9");
+    this.nameSpan.textContent = this.name; 
+
+    this.editLink ||= document.createElement('a');
+    this.editLink.classList.set("my-1 text-right");
+    this.editLink.innerHTML = `<i class="editReview p-4 fa fa-pencil-alt" data-review-id="${this.id}"></i>`;
+
+    this.deleteLink ||= document.createElement('a');
+    this.deleteLink.classList.set("my-1 text-right");
+    this.deleteLink.innerHTML = `<i class="deleteReview p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
+
+    this.element.append(this.markCompleteLink, this.nameSpan, this.editLink, this.deleteLink);
+
+    return this.element;
+  }
 }
+
 
 class FlashMessage {
   constructor({type, message}) {
