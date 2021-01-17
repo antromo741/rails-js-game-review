@@ -158,35 +158,37 @@ class Review {
 
   static create(formData) {
     if(!Review.active_game_id){
-      return new FlashMessage({type: 'error', message: "Please select a game to review"});
+      return Promise.reject().catch(() => new FlashMessage({type: 'error', message: "Please select a game to review"}));
+    } else {
+      formData.game_id = Review.active_game_id;
     }
-    return fetch("http://localhost:3000/reviews", {
-      method: 'POST', 
+    return fetch('http://localhost:3000/reviews',{
+      method: 'POST',
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({review: formData})
+      body: JSON.stringify({
+        review: formData
+      })
     })
-    .then(res => {
-      if(res.ok) {
-        return res.json() //returns a promise for body content that gets parsed s json
+      .then(res => {
+        if(res.ok) {
+          return res.json()
       } else {
-        return res.text().then(error => Promise.reject(error)) // return a reject promise 
+        return res.text().then(error => Promise.reject(error))
       }
     })
-    .then(reviewAttributes => {
-      let review = new Review(reviewAttributes);
-      this.collection[this.active_game_id].push(review);
-      let rendered = review.render();
-      this.container().appendChild(rendered);
-     // new FlashMessage({type: 'success', message: 'New list added succesfully'})
+    .then(reviewData => {
+      let review = new Review(reviewData);
+      this.collection()[Review.active_game_id].push(review);
+      this.container().append(review.render())
       return review;
     })
-    .catch(error => {
-      new FlashMessage({type: 'error', message: error});
-    })
+    .catch(error => new FlashMessage({type: 'error', message: error}))
+    
   }
+
 
   static findById(id) {
     return this.collection()[Review.active_game_id].find(review => review.id == id);
@@ -241,7 +243,7 @@ class FlashMessage {
   }
 
   toggleMessage() {
-    console.log(this);
+    
     FlashMessage.container().textContent = this.message;
     FlashMessage.container().classList.toggle(this.color);
     FlashMessage.container().classList.toggle('opacity-0'); 
