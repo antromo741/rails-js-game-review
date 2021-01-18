@@ -208,6 +208,10 @@ class Review {
     this.element ||= document.createElement('li');
     this.element.classList.set("my-2 px-4 bg-green-200 grid grid-cols-12");
 
+    this.gamePadLink ||= document.createElement('a');
+    this.gamePadLink.classList.set("my-1 text-right");
+    this.gamePadLink.innerHTML = `<i class="fas fa-gamepad"></i>`;
+
     this.nameSpan ||= document.createElement('span');
     this.nameSpan.classList.set("py-4 col-span-9");
     this.nameSpan.textContent = this.name; 
@@ -220,7 +224,7 @@ class Review {
     this.deleteLink.classList.set("my-1 text-right");
     this.deleteLink.innerHTML = `<i class="deleteReview p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
 
-    this.element.append(this.nameSpan, this.editLink, this.deleteLink);
+    this.element.append(this.gamePadLink, this.nameSpan, this.editLink, this.deleteLink);
 
     return this.element;
   }
