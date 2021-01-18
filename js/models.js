@@ -98,7 +98,7 @@ class Game {
         }
       })
       .then(({game, reviews}) => {
-        //Review.loadByList(reviews, game.id)
+        Review.loadFromList(reviews, game.id)
         this.markActive()
       })
       .catch(error => {
@@ -107,13 +107,13 @@ class Game {
   }
 
   markActive() {
-    if(Game.activeList) {
-      Game.activeList.active = false;
-      Game.activeList.element.classList.replace('bg-red-500', 'bg-green-200');
+    if(Game.active) {
+      Game.active.element.classList.replace('bg-red-500', 'bg-green-200');
+      Game.active.active = false;
     }
-    Game.activeList = this;
-    this.active = true;
+    
     this.element.classList.replace('bg-green-200', 'bg-red-500');
+    this.active = true;
   }
 
   render() {
@@ -129,12 +129,12 @@ class Game {
   if(!this.editLink){
   this.editLink ||= document.createElement('a');
   this.editLink.classList.add(..."my-4 text-right".split(" "));
-  this.editLink.innerHTML = `<i class="fa fa-pencil-alt"></i>`;
+  this.editLink.innerHTML = `<i class="fa fa-pencil-alt editGame p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
   
   this.deleteLink ||= document.createElement('a')
   this.deleteLink.classList.add(..."my-4 text-right".split(" "));
-  this.deleteLink.innerHTML = `<i class="deleteGame fa fa-trash-alt" data-game-id="${this.id}"></i>`;
-   } 
+  this.deleteLink.innerHTML = `<i class="fa fa-trash-alt deleteGame p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
+  } 
   this.element.append(this.nameLink, this.editLink, this.deleteLink);
 
   return this.element;
@@ -154,6 +154,20 @@ class Review {
 
   static container() {
     return this.c ||= document.querySelector("#reviews")
+  }
+
+  static findById(id) {
+    let result = this.all()[Review.active_game_id].find(review => review.id == id);
+    return result ? result : new FlashMessage({type: "error", message: "Review not found."})
+  }
+
+  static loadFromList(reviews, game_id) {
+    let reviewObjects = reviews.map(attrs => new Review(attrs));
+    this.all()[game_id] = reviewObjects;
+    this.active_game_id = game_id;
+    let reviewElements = reviewObjects.map(review => review.render());
+    this.container().innerHTML = "";
+    this.container().append(...reviewElements);
   }
 
   static create(formData) {
@@ -185,22 +199,9 @@ class Review {
       this.container().append(review.render())
       return review;
     })
-    .catch(error => new FlashMessage({type: 'error', message: error}))
-    
-  }
-
-
-  static findById(id) {
-    return this.collection()[Review.active_game_id].find(review => review.id == id);
-  }
-
-  static loadByList(id, reviewsAttributes) {
-    Review.active_game_id = id;
-    let reviews = reviewsAttributes.map(reviewAttributes => new Review(reviewAttributes));
-    this.collection()[id] = reviews;
-    let rendered = reviews.map(review => review.render())
-    this.container().innerHTML = "";
-    this.container().append(...rendered)
+    .catch(error => {
+      return new FlashMessage({type: 'error', message: error})
+    })
   }
 
   render() {
@@ -219,7 +220,7 @@ class Review {
     this.deleteLink.classList.set("my-1 text-right");
     this.deleteLink.innerHTML = `<i class="deleteReview p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
 
-    this.element.append(tthis.nameSpan, this.editLink, this.deleteLink);
+    this.element.append(this.nameSpan, this.editLink, this.deleteLink);
 
     return this.element;
   }
