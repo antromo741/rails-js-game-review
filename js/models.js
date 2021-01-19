@@ -16,11 +16,7 @@ class Game {
   </section>
   */
   static container() {
-    return this.c ||= document.querySelector('#lists')
-  }
-
-  static collection() {
-    return this.coll ||= {};
+    return this.c ||= document.querySelector('#games')
   }
   
   /*
@@ -29,6 +25,7 @@ class Game {
   intial call to Game.all() which will occur at the DOMContentLoaded event
   */
   static all() {
+    console.log(this);
     return fetch("http://localhost:3000/games", {
         headers: {
             "Accept": "application/json",
@@ -74,7 +71,7 @@ class Game {
       let game = new Game(gameAttributes);
       this.collection.push(game);
       this.container().appendChild(game.render());
-      new FlashMessage({type: 'success', message: 'New list added succesfully'})
+      new FlashMessage({type: 'success', message: 'New game added succesfully'})
       return game;
     })
     .catch(error => {
@@ -97,8 +94,8 @@ class Game {
           return res.text().then(error => Promise.reject(error))
         }
       })
-      .then(({game, reviews}) => {
-        Review.loadFromList(reviews, game.id)
+      .then(({id, reviewsAttributes}) => {
+        Review.loadFromList(id, reviewsAttributes)
         this.markActive()
       })
       .catch(error => {
@@ -136,31 +133,32 @@ class Game {
 
   markActive() {
     if(Game.active) {
-      Game.active.element.classList.replace('bg-red-500', 'bg-green-200');
-      Game.active.active = false;
+      Game.activeList.active = false;
+      Game.activeList.element.classList.replace('bg-red-500', 'bg-green-200');
+      
     }
-    
+    Game.activeList = this;
+    this.active = true;
     this.element.classList.replace('bg-green-200', 'bg-red-500');
-    Game.active = this;
   }
 
   render() {
   this.element ||= document.createElement('li')
 
-  this.element.classList.add(...`my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6`.split(" "));
+  this.element.classList.set(`my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6`);
  
   this.nameLink ||= document.createElement('a');
-  this.nameLink.classList.add(..."selectGame py-4 col-span-10 sm:col-span-4".split(" "));
+  this.nameLink.classList.set("selectGame py-4 col-span-10 sm:col-span-4");
   this.nameLink.textContent = this.name;
   this.nameLink.dataset.gameId = this.id;
 
   if(!this.editLink){
   this.editLink ||= document.createElement('a');
-  this.editLink.classList.add(..."my-4 text-right".split(" "));
+  this.editLink.classList.set("my-4 text-right");
   this.editLink.innerHTML = `<i class="editGameForm fa fa-pencil-alt  p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
   
   this.deleteLink ||= document.createElement('a')
-  this.deleteLink.classList.add(..."my-4 text-right".split(" "));
+  this.deleteLink.classList.set("my-4 text-right");
   this.deleteLink.innerHTML = `<i class="deleteGameForm fa fa-trash-alt  p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
   } 
   this.element.append(this.nameLink, this.editLink, this.deleteLink);
@@ -176,34 +174,30 @@ class Review {
       whitelist.forEach(attr => this[attr] = attributes[attr])
   }
   
-  static all() {
-    return this.collection ||= {};
-  }
-
   static collection() {
     return this.coll ||= {};
   }
+
   static container() {
     return this.c ||= document.querySelector("#reviews")
   }
 
   static findById(id) {
-    let result = this.all()[Review.active_game_id].find(review => review.id == id);
-    return result ? result : new FlashMessage({type: "error", message: "Review not found."})
+    return this.collection()[Review.active_game_id].find(review => review.id == id);
   }
 
-  static loadFromList(reviews, game_id) {
-    let reviewObjects = reviews.map(attrs => new Review(attrs));
-    this.all()[game_id] = reviewObjects;
-    this.active_game_id = game_id;
-    let reviewElements = reviewObjects.map(review => review.render());
+  static loadFromList(id, reviewsAttributes) {
+    Review.active_game_id = id;
+    let reviews = reviewsAttributes.map(reviewAttributes => new Review(reviewAttributes));
+    this.collection()[id] = reviews;
+    let rendered = reviews.map(review => review.render())
     this.container().innerHTML = "";
-    this.container().append(...reviewElements);
+    this.container().append(...rendered)
   }
 
   static create(formData) {
     if(!Review.active_game_id){
-      return Promise.reject.catch(() => new FlashMessage({type: 'error', message: "Please select a game before adding a task"}));
+      return Promise.reject.catch(() => new FlashMessage({type: 'error', message: "Please select a game before adding a review"}));
     } else {
       formData.game_id = Review.active_game_id;
     }
@@ -229,11 +223,52 @@ class Review {
       .then(reviewData => {
         let review = new Review(reviewData);
         this.collection()[Review.active_game_id].push(review);
-        this.container().appendChild(review.render());
+        this.container().append(review.render());
         return review;
       })
       .catch(error => new FlashMessage({type: 'error', message: error}))
   }
+
+  edit() {
+      this.editForm ||= document.createElement("form")
+      this.editForm.classList.set("editReviewForm mb-2");
+      this.editForm.dataset.reviewId = this.id;
+      this.editForm.innerHTML = `
+      <fieldset class="my-2">
+      <label for="name" class="block w-full uppercase">Name</label>
+      <input  
+        type="text" 
+        name="name" 
+        id="name"
+        class="w-full border-2 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" 
+        />
+      </fieldset>
+      <fieldset class="my-2">
+        <label for="review_post" class="block w-full uppercase">Review Post</label>
+        <textarea
+          id="review_post" 
+          name="review_post" 
+          class="w-full h-32 border-2 rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+        ></textarea>
+      </fieldset> 
+      <input 
+        type="submit" 
+        class="w-full block py-3 bg-green-400 hover:bg-green-500 transition duration-200 uppercase font-semibold cursor-pointer" 
+        value="Save Review" 
+      />
+     </form>
+     `
+      this.editForm.querySelector('#name').value = this.name;
+      this.editForm.querySelector('#content').value = this.review_post || '';
+      return this.editForm;
+   }
+
+   update() {
+     review.update(formData) => {
+      
+     }
+   }
+
 
   delete() {
     return fetch(`http://localhost:3000/reviews/${this.id}`,{
@@ -262,23 +297,23 @@ class Review {
 
   render() {
     this.element ||= document.createElement('li');
-    this.element.classList.add(..."my-2 px-4 bg-green-200 grid grid-cols-12".split(" "));
+    this.element.classList.set("my-2 px-4 bg-green-200 grid grid-cols-12");
 
     this.gamePadLink ||= document.createElement('a');
-    this.gamePadLink.classList.add(..."my-1 text-right".split(" "));
+    this.gamePadLink.classList.set("my-1 text-right");
     this.gamePadLink.innerHTML = `<i class="fas fa-gamepad"></i>`;
 
     this.nameSpan ||= document.createElement('span');
-    this.nameSpan.classList.add(..."py-4 col-span-9".split(" "));
+    this.nameSpan.classList.set("py-4 col-span-9");
     this.nameSpan.textContent = this.name; 
 
     this.editLink ||= document.createElement('a');
-    this.editLink.classList.add(..."my-1 text-right".split(" "));
-    this.editLink.innerHTML = `<i class="editReview p-4 fa fa-pencil-alt" data-review-id="${this.id}"></i>`;
+    this.editLink.classList.set("my-1 text-right");
+    this.editLink.innerHTML = `<i class="editReviewForm p-4 fa fa-pencil-alt" data-review-id="${this.id}"></i>`;
 
     this.deleteLink ||= document.createElement('a');
-    this.deleteLink.classList.add(..."my-1 text-right".split(" "));
-    this.deleteLink.innerHTML = `<i class="deleteReview p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
+    this.deleteLink.classList.set("my-1 text-right");
+    this.deleteLink.innerHTML = `<i class="deleteReviewForm p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
 
     this.element.append(this.gamePadLink, this.nameSpan, this.editLink, this.deleteLink);
 

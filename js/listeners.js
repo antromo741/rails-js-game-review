@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(e) {
     Game.all();
+    Modal.init();
 })
 
 document.addEventListener('click', function(e) {
@@ -13,11 +14,11 @@ document.addEventListener('click', function(e) {
         let game = Game.findById(target.dataset.gameId);
         game.delete();
       }
-    }  else if(target.matches(".editReview")) {
+    }  else if(target.matches(".editReviewForm")) {
         let review = Review.findById(target.dataset.reviewId);
         Modal.populate({title: "Edit Review", content: review.edit()})
         Modal.toggle()
-      } else if(target.matches(".deleteReview")) {
+      } else if(target.matches(".deleteReviewform")) {
         if(confirm("Are you sure you want to delete this review?")) {
           let review = Review.findById(target.dataset.reviewId);
           review.delete();
@@ -28,26 +29,39 @@ document.addEventListener('click', function(e) {
     } 
 })
 
+
+
+
 document.addEventListener('submit', function(e) {
     let target = e.target; 
     if(target.matches('#newGame')) {
       e.preventDefault();
       Game.create(target.serialize())
-        .then(() => target.reset());
-    } else if (target.matches('.editGameForm')) {
-      e.preventDefault();
-      let game = Game.findById(target.dataset.gameId);
-      game.update(target.serialize());
+        .then(() => {
+          target.reset();
+          target.querySelector('input[name="name"]').blur();
+        });
     } else if (target.matches('#newReviewForm')) {
       e.preventDefault();
-      if(!Review.active_game_id) {
-        return new FlashMessage({type: 'error', message: 'Make sure to select a Game before creating a new Review'})
-      }
       Review.create(target.serialize())
-        .then(() => target.reset());
-    } else if (target.matches('.editReviewForm')) {
-      e.preventDefault();
-      let review = Review.findById(target.dataset.reviewId);
-      review.update(target.serialize());
-    } 
-  })
+      .then(() => target.reset());
+  } else if(target.matches('.editReviewform')) {
+    e.preventDefault();
+    let review = Review.findById(target.dataset.reviewId);
+    review.update(target.serialize())
+      .then(() => Modal.toggle())
+  }
+});
+
+document.addEventListener('keydown', function(evt) {
+  evt = evt || window.event;
+  let isEscape = false;
+  if ("key" in evt) {
+    isEscape = (evt.key === "Escape" || evt.key === "Esc");
+  } else {
+    isEscape = (evt.keyCode === 27);
+  }
+  if (isEscape && document.body.classList.contains('modal-active')) {
+    Modal.toggle();
+  }
+});
