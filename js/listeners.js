@@ -18,7 +18,7 @@ document.addEventListener('click', function(e) {
         let review = Review.findById(target.dataset.reviewId);
         Modal.populate({title: "Edit Review", content: review.edit()})
         Modal.toggle()
-      } else if(target.matches(".deleteReviewform")) {
+      } else if(target.matches(".deleteReviewForm")) {
         if(confirm("Are you sure you want to delete this review?")) {
           let review = Review.findById(target.dataset.reviewId);
           review.delete();
@@ -45,7 +45,7 @@ document.addEventListener('submit', function(e) {
       e.preventDefault();
       Review.create(target.serialize())
       .then(() => target.reset());
-  } else if(target.matches('.editReviewform')) {
+  } else if(target.matches('.editReviewForm')) {
     e.preventDefault();
     let review = Review.findById(target.dataset.reviewId);
     review.update(target.serialize())

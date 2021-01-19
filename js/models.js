@@ -132,12 +132,12 @@ class Game {
   }
 
   markActive() {
-    if(Game.active) {
-      Game.activeList.active = false;
-      Game.activeList.element.classList.replace('bg-red-500', 'bg-green-200');
+    if(Game.activeGame) {
+      Game.activeGame.active = false;
+      Game.activeGame.element.classList.replace('bg-red-500', 'bg-green-200');
       
     }
-    Game.activeList = this;
+    Game.activeGame = this;
     this.active = true;
     this.element.classList.replace('bg-green-200', 'bg-red-500');
   }
@@ -259,16 +259,33 @@ class Review {
      </form>
      `
       this.editForm.querySelector('#name').value = this.name;
-      this.editForm.querySelector('#content').value = this.review_post || '';
+      this.editForm.querySelector('#review_post').value = this.review_post || '';
       return this.editForm;
    }
 
-   update() {
-     review.update(formData) => {
-      
-     }
+   update(formData) {
+    return fetch(`http://localhost:3000/reviews/${this.id}`, {
+      method: "PUT",
+      headers:{
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({review: formData})
+    })
+    .then(res => {
+      if(res.ok) {
+        return res.json()
+      } else {
+        return res.text().then(error => Promise.reject(error))
+      }
+    })
+    .then((reviewAttributes) => {
+      Object.keys(reviewAttributes).forEach(attr => this[attr] = reviewAttributes[attr])
+      this.render();
+      new FlashMessage({type: 'success', message: 'Review updated successfully'});
+    })
+    .catch(error => new FlashMessage({type: 'error', message: error})) 
    }
-
 
   delete() {
     return fetch(`http://localhost:3000/reviews/${this.id}`,{
