@@ -8,7 +8,7 @@ document.addEventListener('click', function(e) {
     if(target.matches(".selectGame")) {
       let game = Game.findById(target.dataset.gameId);
       game.show();
-    } else if(target.matches(".deleteGame")) {
+    } else if(target.matches(".deleteGameForm")) {
       if(confirm("Are you sure you want to delete this game?")) {
         let game = Game.findById(target.dataset.gameId);
         game.delete();
@@ -29,30 +29,25 @@ document.addEventListener('click', function(e) {
 })
 
 document.addEventListener('submit', function(e) {
-    let target = e.target;
+    let target = e.target; 
     if(target.matches('#newGame')) {
-        e.preventDefault();
-        let formData = {}
-         target.querySelectorAll('input').forEach(function(input) {
-            formData[input.name] = input.value;
-        })
-      Game.create(formData)
-        .then(() => {
-          target.querySelectorAll('input').forEach(function(input) {
-            input.value = "";
-          })
-        });
-    } else if(target.matches('#newReviewForm')) {
       e.preventDefault();
-      let formData = {};
-        target.querySelectorAll('input').forEach(function(input) {
-        formData[input.name] = input.value;
-     });
-    Review.create(formData)
-    .then(() => {
-        target.querySelectorAll('input').forEach(function(input) {
-           input.value = "";
-        })
-        });
-    }
-})
+      Game.create(target.serialize())
+        .then(() => target.reset());
+    } else if (target.matches('.editGameForm')) {
+      e.preventDefault();
+      let game = Game.findById(target.dataset.gameId);
+      game.update(target.serialize());
+    } else if (target.matches('#newReviewForm')) {
+      e.preventDefault();
+      if(!Review.active_game_id) {
+        return new FlashMessage({type: 'error', message: 'Make sure to select a Game before creating a new Review'})
+      }
+      Review.create(target.serialize())
+        .then(() => target.reset());
+    } else if (target.matches('.editReviewForm')) {
+      e.preventDefault();
+      let review = Review.findById(target.dataset.reviewId);
+      review.update(target.serialize());
+    } 
+  })

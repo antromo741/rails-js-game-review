@@ -84,7 +84,7 @@ class Game {
 
   show() {
     return fetch(`http://localhost:3000/games/${this.id}`, {
-      //method: 'GET', 
+      method: 'GET', 
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -106,6 +106,34 @@ class Game {
       })
   }
 
+  delete() {
+    return fetch(`http://localhost:3000/games/${this.id}`,{
+      method: "DELETE",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => {
+      if(res.ok) {
+        return res.json()
+      } else {
+        return res.text().then(error => Promise.reject(error))
+      }
+    })
+    .then(({id}) => {
+      let index = Game.collection.findIndex(review => review.id == id)
+      Game.collection.splice(index, 1);
+      this.element.remove();
+      if (id == Review.active_game_id) {
+        Review.container().innerHTML = `<li class="my-2 p-4">Select a Game to see a Review</li>`
+      }
+      return this;
+
+    })
+    .catch(error => new FlashMessage({type: 'error', message: error}))
+  }
+
   markActive() {
     if(Game.active) {
       Game.active.element.classList.replace('bg-red-500', 'bg-green-200');
@@ -113,7 +141,7 @@ class Game {
     }
     
     this.element.classList.replace('bg-green-200', 'bg-red-500');
-    this.active = true;
+    Game.active = this;
   }
 
   render() {
@@ -122,18 +150,18 @@ class Game {
   this.element.classList.add(...`my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6`.split(" "));
  
   this.nameLink ||= document.createElement('a');
-  this.nameLink.classList.add(..."py-4 col-span-10 sm:col-span-4 selectGame".split(" "));
+  this.nameLink.classList.add(..."selectGame py-4 col-span-10 sm:col-span-4".split(" "));
   this.nameLink.textContent = this.name;
   this.nameLink.dataset.gameId = this.id;
 
   if(!this.editLink){
   this.editLink ||= document.createElement('a');
   this.editLink.classList.add(..."my-4 text-right".split(" "));
-  this.editLink.innerHTML = `<i class="fa fa-pencil-alt editGame p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
+  this.editLink.innerHTML = `<i class="editGameForm fa fa-pencil-alt  p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
   
   this.deleteLink ||= document.createElement('a')
   this.deleteLink.classList.add(..."my-4 text-right".split(" "));
-  this.deleteLink.innerHTML = `<i class="fa fa-trash-alt deleteGame p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
+  this.deleteLink.innerHTML = `<i class="deleteGameForm fa fa-trash-alt  p-4 cursor-pointer" data-game-id="${this.id}"></i>`;
   } 
   this.element.append(this.nameLink, this.editLink, this.deleteLink);
 
@@ -152,6 +180,9 @@ class Review {
     return this.collection ||= {};
   }
 
+  static collection() {
+    return this.coll ||= {};
+  }
   static container() {
     return this.c ||= document.querySelector("#reviews")
   }
@@ -172,56 +203,81 @@ class Review {
 
   static create(formData) {
     if(!Review.active_game_id){
-      return Promise.reject().catch(() => new FlashMessage({type: 'error', message: "Please select a game to review"}));
+      return Promise.reject.catch(() => new FlashMessage({type: 'error', message: "Please select a game before adding a task"}));
     } else {
       formData.game_id = Review.active_game_id;
     }
-    return fetch('http://localhost:3000/reviews',{
-      method: 'POST',
+    console.log(formData);
+    return fetch(`http://localhost:3000/reviews`, {
+      method: 'POST', 
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
+        
       },
       body: JSON.stringify({
         review: formData
       })
     })
       .then(res => {
-        if(res.ok) {
-          return res.json()
+        if (res.ok) {
+          return res.json();
+        } else {
+          return res.text().then(error => Promise.reject(error));
+        }
+      })
+      .then(reviewData => {
+        let review = new Review(reviewData);
+        this.collection()[Review.active_game_id].push(review);
+        this.container().appendChild(review.render());
+        return review;
+      })
+      .catch(error => new FlashMessage({type: 'error', message: error}))
+  }
+
+  delete() {
+    return fetch(`http://localhost:3000/reviews/${this.id}`,{
+      method: "DELETE",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => {
+      if(res.ok) {
+        return res.json()
       } else {
         return res.text().then(error => Promise.reject(error))
       }
     })
-    .then(reviewData => {
-      let review = new Review(reviewData);
-      this.collection()[Review.active_game_id].push(review);
-      this.container().append(review.render())
-      return review;
+    .then(({id}) => {
+      let index = Review.collection()[Review.active_game_id].findIndex(review => review.id == id)
+      Review.collection()[Review.active_game_id].splice(index, 1);
+      this.element.remove();
+      return this;
+
     })
-    .catch(error => {
-      return new FlashMessage({type: 'error', message: error})
-    })
+    .catch(error => new FlashMessage({type: 'error', message: error}))
   }
 
   render() {
     this.element ||= document.createElement('li');
-    this.element.classList.set("my-2 px-4 bg-green-200 grid grid-cols-12");
+    this.element.classList.add(..."my-2 px-4 bg-green-200 grid grid-cols-12".split(" "));
 
     this.gamePadLink ||= document.createElement('a');
-    this.gamePadLink.classList.set("my-1 text-right");
+    this.gamePadLink.classList.add(..."my-1 text-right".split(" "));
     this.gamePadLink.innerHTML = `<i class="fas fa-gamepad"></i>`;
 
     this.nameSpan ||= document.createElement('span');
-    this.nameSpan.classList.set("py-4 col-span-9");
+    this.nameSpan.classList.add(..."py-4 col-span-9".split(" "));
     this.nameSpan.textContent = this.name; 
 
     this.editLink ||= document.createElement('a');
-    this.editLink.classList.set("my-1 text-right");
+    this.editLink.classList.add(..."my-1 text-right".split(" "));
     this.editLink.innerHTML = `<i class="editReview p-4 fa fa-pencil-alt" data-review-id="${this.id}"></i>`;
 
     this.deleteLink ||= document.createElement('a');
-    this.deleteLink.classList.set("my-1 text-right");
+    this.deleteLink.classList.add(..."my-1 text-right".split(" "));
     this.deleteLink.innerHTML = `<i class="deleteReview p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
 
     this.element.append(this.gamePadLink, this.nameSpan, this.editLink, this.deleteLink);
