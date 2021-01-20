@@ -1,14 +1,66 @@
 class Auth {
-    static init() {
-      this.getCurrentUser()
-    }
+  static init() {
+    this.getCurrentUser()
+  }
 
-    static setToken(token) {
-       localStorage.setItem('token', token);
-       localStorage.setItem('lastLoginTime', new Date(Date.now()).getTime())
-    }
+  static getCurrentUser() {
+    return fetch('http://localhost:3000/current_user', {
+      headers: {
+        "Accept": "application/json", 
+        "Content-Type": "application/json", 
+        "Authorization": this.getToken()
+      }
+    })
+      .then(res => {
+        if(res.ok) {
+          return res.text()
+        } else {
+          throw new Error("Not logged in");
+        }
+      })
+      .then(user => {
+        
+        Auth.current_user = user;
+        this.container().innerHTML = this.loggedInNavbar().outerHTML;
+        Game.all();
+      })
+      .catch(error => {
+        Auth.current_user = null;
+        this.conatiner().innerHTML = this.loggedOutNavbar().outerHTML;
+      })
+  }
 
-    static getToken() {
+
+  static loggedInNavbar() {
+    let span = document.createElement('span');
+    span.classList.set('block mt-1');
+    span.innerHTML = `${Auth.current_user} <a href="#" class="logoutLink bg-blue-300 px-4 py-2">Logout</a>`
+    return span;
+  }
+
+  static loggedOutNavbar() {
+    let link = document.createElement('a');
+    link.href = "#";
+    link.classList.set("loginLink");
+    link.innerHTML = `Login <i class="text-3xl loginLink fas fa-user-alt"></i>`;
+    return link;
+  }
+
+  static setToken(token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('lastLoginTime', new Date(Date.now()).getTime())
+  }
+
+  static container() {
+    return this.c ||= document.querySelector('#auth');
+  }
+
+  static setToken(token) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('lastLoginTime', new Date(Date.now()).getTime())
+  }
+    
+  static getToken() {
         let now = new Date(Date.now()).getTime();
         let thirtyMinutes = 1000 * 60 * 30;
         let timeSinceLastLogin = now - localStorage.getItem('lastLoginTime');
@@ -17,29 +69,30 @@ class Auth {
         }
     }
     
-    static revokeToken() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('lastLoginTime');
-    }
+    
+  static revokeToken() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('lastLoginTime');
+  }
 
-    static fetch(url, options) {
-        let fetchOptions = Object.assign({}, {
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": this.getToken()
-            }
-        }, options);
-        return fetch(url, fetchOptions)
-        .then(res => {
-        if (res.ok) {
-            return res.json();
-        } else{
-            return res.text().then(error => Promise.reject(error));
-        }
-    })
-    .catch(error => new FlashMessage(error));
-    }
+  static fetch(url, options) {
+      let fetchOptions = Object.assign({}, {
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": this.getToken()
+          }
+      }, options);
+      return fetch(url, fetchOptions)
+      .then(res => {
+      if (res.ok) {
+          return res.json();
+      } else{
+          return res.text().then(error => Promise.reject(error));
+      }
+  })
+  .catch(error => new FlashMessage(error));
+  }
 
     static loginForm() {
         this.loginFormElement ||= document.createElement("form");
@@ -87,47 +140,47 @@ class Auth {
         return this.loginFormElement;
       }
 
-      static login(formData) {
-        return fetch("http://localhost:3000/login", {
-          method: POST,
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({user: formData})
-        })
-          .then(res => {
-            if(res.ok) {
-              return res.json();
-            } else {
-              return res.json().then(error => Promise.reject(error));
-            }         
-           })
-           .then(res)
-      }
-
-      static signup({email, password}) {
-        return fetch('http://localhost:3000/signup', {
-          method: 'POST',
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({user: formData})
-
-        })
-        .then(res => {
-          this.setToken(res.headers.get('Authorization'))
-          return res.json()
+  static login(formData) {
+    return fetch("http://localhost:3000/login", {
+      method: POST,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({user: formData})
+    })
+      .then(res => {
+        if(res.ok) {
+          return res.json();
         } else {
-          return res.json().then(text => Promise.reject(text));
-         }
+          return res.json().then(error => Promise.reject(error));
+        }         
         })
-        .then(({data,status}) => {
-          console.log(data.email);
-          new FlashMessage({type: 'success', message: status.message});
-        Modal.toggle();
-        })
-        .catch(({error}) => new FlashMessage({type: 'error', message: error}))
+        .then(res)
+  }
+
+  static signup({email, password}) {
+    return fetch('http://localhost:3000/signup', {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({user: formData})
+
+    })
+    .then(res => {
+      this.setToken(res.headers.get('Authorization'))
+      return res.json()
+    } else {
+      return res.json().then(text => Promise.reject(text));
       }
+    })
+    .then(({data,status}) => {
+      console.log(data.email);
+      new FlashMessage({type: 'success', message: status.message});
+    Modal.toggle();
+    })
+    .catch(({error}) => new FlashMessage({type: 'error', message: error}))
+  }
 }
