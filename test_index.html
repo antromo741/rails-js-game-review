@@ -43,6 +43,29 @@
       </ul>
     </section>
   </div>
+   <form class="editReviewForm mb-2" data-review-id="1">
+            <fieldset class="my-2">
+              <label for="name" class="block w-full uppercase">Name</label>
+              <input  
+                type="text" 
+                name="name" 
+                id="name"
+                class="w-full border-2 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" 
+              />
+            </fieldset>
+            <fieldset class="my-2">
+              <label for="review_post" class="block w-full uppercase">Review Post</label>
+              <textarea 
+                id="review_post" 
+                name="review_post" 
+                class="w-full h-32 border-2 rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+              ></textarea>
+            </fieldset> 
+            <input 
+              type="submit" 
+              class="w-full block py-3 bg-green-400 hover:bg-green-500 transition duration-200 uppercase font-semibold cursor-pointer" 
+              value="Save Review" 
+            />
   <script src="js/models.js"></script>
   <script src="js/listeners.js"></script>
 </body>

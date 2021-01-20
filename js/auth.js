@@ -151,12 +151,20 @@ class Auth {
     })
       .then(res => {
         if(res.ok) {
+          this.setToken(res.headers.get('Authorization'));
           return res.json();
         } else {
           return res.json().then(error => Promise.reject(error));
         }         
         })
-        .then(res)
+        .then(({data,status}) => {
+          Auth.current_user = data.email;
+          new FlashMessage({type: 'success', message: status.message});
+          this.container().innerHTML = this.loggedInNavbar().outerHTML;
+          Modal.toggle();
+          Game.all();
+        })
+        .catch(({error}) => FlashMessage({type: 'error', message: error}))
   }
 
   static signup({email, password}) {
@@ -170,6 +178,7 @@ class Auth {
 
     })
     .then(res => {
+      if(res.ok) {
       this.setToken(res.headers.get('Authorization'))
       return res.json()
     } else {
@@ -177,9 +186,11 @@ class Auth {
       }
     })
     .then(({data,status}) => {
-      console.log(data.email);
+      Auth.current_user = data.email;
       new FlashMessage({type: 'success', message: status.message});
-    Modal.toggle();
+      this.container().innerHTML = this.loggedInNavbar().outerHTML;
+      Modal.toggle();
+      Game.all();
     })
     .catch(({error}) => new FlashMessage({type: 'error', message: error}))
   }

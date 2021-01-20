@@ -174,29 +174,44 @@ nothing until it is hovered */
 
         <!--Body-->
         <div id="modal-content">
-          <form class="editReviewForm mb-2" data-review-id="1">
-            <fieldset class="my-2">
-              <label for="name" class="block w-full uppercase">Name</label>
-              <input  
-                type="text" 
-                name="name" 
-                id="name"
-                class="w-full border-2 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" 
+        <form class="authForm bg-white rounded px-8 pt-0 pb-2 mb-4">
+            <h1 class="text-2xl font-bold mb-4">Login</h1>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                Email
+              </label>
+              <input 
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="email" 
+                type="eamil" 
+                name="email" 
+                placeholder="email"
+              >
+            </div>
+            <div class="mb-6">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                Password
+              </label>
+              <input 
+                class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+                id="password" 
+                type="password" 
+                name="password" 
+                placeholder="******************"
+              >
+              <p class="text-red-500 text-xs italic">Please choose a password.</p>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input 
+                class="multi-submit bg-blue-500 hover:bg-blue-700 transition duration-200 text-white font-bold py-2 px-4 w-full rounded focus:outline-none focus:shadow-outline" 
+                type="submit"
+                value="Login"
               />
-            </fieldset>
-            <fieldset class="my-2">
-              <label for="review_post" class="block w-full uppercase">Review Post</label>
-              <textarea 
-                id="review_post" 
-                name="review_post" 
-                class="w-full h-32 border-2 rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
-              ></textarea>
-            </fieldset> 
-            <input 
-              type="submit" 
-              class="w-full block py-3 bg-green-400 hover:bg-green-500 transition duration-200 uppercase font-semibold cursor-pointer" 
-              value="Save Review" 
-            />
+              <input 
+                class="multi-submit bg-green-500 hover:bg-green-700 transition duration-200 text-white font-bold py-2 px-4 w-full rounded focus:outline-none focus:shadow-outline" 
+                type="submit"
+                value="Signup"
+              />
           </form>
         </div>
         
