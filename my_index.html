@@ -73,11 +73,12 @@ nothing until it is hovered */
 }
 </style>
 </head>
-<body>
-
-<div class="header">
-  <h2>Romulus Reviews</h2>
-  <p>Maybe add a moving Nav/Newsbar here</p>
+<body class="">
+  <div class="header bg-green-500">
+    <navbar class="container mx-auto grid grid-cols-2 py-6">
+      <span class="text-white text-2xl font-bold"><h2>Romulus Reviews</h2></span>
+      <div id="auth" class="text-right"></div>
+  
 </div>
 
 <ul>
@@ -116,6 +117,7 @@ nothing until it is hovered */
  
  <li style="float:right"><a href="#about">About</a></li>
 </ul>
+ </navbar>
  <div class="container mx-auto sm:grid grid-cols-3 gap-4 my-4">
     <section id="flash" class="h-10 col-span-3 py-2 pl-4 opacity-0 transition-opacity duration-700"></section>
     <section id="gamesContainer" class="px-4 bg-teal-100 sm:min-h-screen rounded-md shadow">
