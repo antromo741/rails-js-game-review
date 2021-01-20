@@ -86,4 +86,48 @@ class Auth {
         `;
         return this.loginFormElement;
       }
+
+      static login(formData) {
+        return fetch("http://localhost:3000/login", {
+          method: POST,
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({user: formData})
+        })
+          .then(res => {
+            if(res.ok) {
+              return res.json();
+            } else {
+              return res.json().then(error => Promise.reject(error));
+            }         
+           })
+           .then(res)
+      }
+
+      static signup({email, password}) {
+        return fetch('http://localhost:3000/signup', {
+          method: 'POST',
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({user: formData})
+
+        })
+        .then(res => {
+          this.setToken(res.headers.get('Authorization'))
+          return res.json()
+        } else {
+          return res.json().then(text => Promise.reject(text));
+         }
+        })
+        .then(({data,status}) => {
+          console.log(data.email);
+          new FlashMessage({type: 'success', message: status.message});
+        Modal.toggle();
+        })
+        .catch(({error}) => new FlashMessage({type: 'error', message: error}))
+      }
 }
