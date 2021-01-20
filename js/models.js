@@ -26,25 +26,14 @@ class Game {
   */
   static all() {
     console.log(this);
-    return fetch("http://localhost:3000/games", {
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
-    })
-    .then(res => {
-        if(res.ok) {
-            return res.json() //returns a promise for body content that gets parsed s json
-        } else {
-            return res.text().then(error => Promise.reject(error)) // return a reject promise 
-        }
-    })
+    return Auth.fetch("http://localhost:3000/games")
     .then(gameArray => {
       this.collection = gameArray.map(attrs => new Game(attrs))
-      let renderedLists = this.collection.map(game => game.render())
-      this.container().append(...renderedLists);
+      let renderedGames = this.collection.map(game => game.render())
+      this.container().append(...renderedGames);
         return this.collection
     })
+    .catch(error => new FlashMessage(error));
   }
 
   static findById(id) {
