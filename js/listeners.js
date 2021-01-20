@@ -6,7 +6,14 @@ document.addEventListener('DOMContentLoaded', function(e) {
 document.addEventListener('click', function(e) {
     let target = e.target;
   
-    if(target.matches(".selectGame")) {
+    if (target.matches('.loginLink')) {
+      e.preventDefault();
+      Modal.populate({title: "", content: Auth.loginForm()})
+      Modal.toggle();
+    } else if (target.matches('.logoutLink')) {
+      e.preventDefault();
+      Auth.logout();
+    } else if(target.matches(".selectGame")) {
       let game = Game.findById(target.dataset.gameId);
       game.show();
     } else if(target.matches(".deleteGameForm")) {
@@ -23,14 +30,21 @@ document.addEventListener('click', function(e) {
           let review = Review.findById(target.dataset.reviewId);
           review.delete();
         }
-      } else if(target.matches(".modal-close") || target.matches(".modal-overlay")) {
+      } else if (target.matches('.multi-submit[type="submit"]')) {
         e.preventDefault();
-        Modal.toggle();
+          let form = target.closest('form');
+          if(form.matches('.authForm')) {
+            if(target.value === "Login") {
+              Auth.login(form.serialize());
+            } else if(target.value === "Signup") {
+              Auth.signup(form.serialize());
+            }
+          }
+      } else if(target.matches(".modal-close") || target.matches(".modal-overlay")) {
+          e.preventDefault();
+          Modal.toggle();
     } 
-})
-
-
-
+  })
 
 document.addEventListener('submit', function(e) {
     let target = e.target; 
