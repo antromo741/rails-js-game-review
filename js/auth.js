@@ -86,8 +86,7 @@ class Auth {
       } else{
           return res.text().then(error => Promise.reject(error));
       }
-  })
-  .catch(error => new FlashMessage(error));
+    })
   }
 
     static loginForm() {
@@ -160,7 +159,7 @@ class Auth {
           Modal.toggle();
           Game.all();
         })
-        .catch(({error}) => FlashMessage({type: 'error', message: error}))
+        .catch(({error}) => new FlashMessage({type: 'error', message: error}))
   }
 
   static logout() {

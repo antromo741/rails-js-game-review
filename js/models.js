@@ -41,20 +41,9 @@ class Game {
   }
 
   static create(formData) {
-    return fetch("http://localhost:3000/games", {
+    return Auth.fetch("http://localhost:3000/games", {
       method: 'POST', 
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({game: formData})
-    })
-    .then(res => {
-      if(res.ok) {
-        return res.json() //returns a promise for body content that gets parsed s json
-      } else {
-        return res.text().then(error => Promise.reject(error)) // return a reject promise 
-      }
     })
     .then(gameAttributes => {
       let game = new Game(gameAttributes);
@@ -63,49 +52,23 @@ class Game {
       new FlashMessage({type: 'success', message: 'New game added succesfully'})
       return game;
     })
-    .catch(error => {
-      new FlashMessage({type: 'error', message: error});
-    })
+    .catch(error => new FlashMessage(error));
   }
 
   show() {
-    return fetch(`http://localhost:3000/games/${this.id}`, {
-      method: 'GET', 
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      }
-    })
-      .then(res => {
-        if(res.ok) {
-          return res.json()
-        } else {
-          return res.text().then(error => Promise.reject(error))
-        }
-      })
+    return Auth.fetch(`http://localhost:3000/games/${this.id}`)
       .then(({id, reviewsAttributes}) => {
         Review.loadGame(id, reviewsAttributes)
         this.markActive()
       })
       .catch(error => {
-        new FlashMessage({type: 'error', message: error});
+        return res.text().then(error => Promise.reject(err))
       })
   }
 
   delete() {
-    return fetch(`http://localhost:3000/games/${this.id}`,{
-      method: "DELETE",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      }
-    })
-    .then(res => {
-      if(res.ok) {
-        return res.json()
-      } else {
-        return res.text().then(error => Promise.reject(error))
-      }
+    return Auth.fetch(`http://localhost:3000/games/${this.id}`,{
+      method: "DELETE"
     })
     .then(({id}) => {
       let index = Game.collection.findIndex(review => review.id == id)
@@ -190,25 +153,12 @@ class Review {
     } else {
       formData.game_id = Review.active_game_id;
     }
-    console.log(formData);
-    return fetch(`http://localhost:3000/reviews`, {
+    return Auth.fetch(`http://localhost:3000/reviews`, {
       method: 'POST', 
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-        
-      },
       body: JSON.stringify({
         review: formData
       })
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          return res.text().then(error => Promise.reject(error));
-        }
-      })
       .then(reviewData => {
         let review = new Review(reviewData);
         this.collection()[Review.active_game_id].push(review);
@@ -253,20 +203,9 @@ class Review {
    }
 
    update(formData) {
-    return fetch(`http://localhost:3000/reviews/${this.id}`, {
+    return Auth.fetch(`http://localhost:3000/reviews/${this.id}`, {
       method: "PUT",
-      headers:{
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({review: formData})
-    })
-    .then(res => {
-      if(res.ok) {
-        return res.json()
-      } else {
-        return res.text().then(error => Promise.reject(error))
-      }
     })
     .then((reviewAttributes) => {
       Object.keys(reviewAttributes).forEach(attr => this[attr] = reviewAttributes[attr])
@@ -278,18 +217,7 @@ class Review {
 
   delete() {
     return fetch(`http://localhost:3000/reviews/${this.id}`,{
-      method: "DELETE",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      }
-    })
-    .then(res => {
-      if(res.ok) {
-        return res.json()
-      } else {
-        return res.text().then(error => Promise.reject(error))
-      }
+      method: "DELETE"
     })
     .then(({id}) => {
       let index = Review.collection()[Review.active_game_id].findIndex(review => review.id == id)
