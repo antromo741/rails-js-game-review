@@ -1,4 +1,5 @@
 class Auth {
+  
   static init() {
     this.getCurrentUser()
   }
@@ -44,11 +45,6 @@ class Auth {
     link.classList.set("loginLink");
     link.innerHTML = `Login <i class="text-3xl loginLink fas fa-user-alt"></i>`;
     return link;
-  }
-
-  static setToken(token) {
-      localStorage.setItem('token', token);
-      localStorage.setItem('lastLoginTime', new Date(Date.now()).getTime())
   }
 
   static container() {
@@ -142,7 +138,7 @@ class Auth {
 
   static login(formData) {
     return fetch("http://localhost:3000/login", {
-      method: POST,
+      method: 'POST',
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -167,7 +163,35 @@ class Auth {
         .catch(({error}) => FlashMessage({type: 'error', message: error}))
   }
 
-  static signup({email, password}) {
+  static logout() {
+    return fetch('http://localhost:3000/logout', {
+      method: 'DELETE',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": this.getToken()
+      }
+    })
+    .then(res => {
+      if(res.ok) {
+        return res.json()
+      } else {
+        return res.json().then(({message}) => Promise.reject(message));
+      }
+    })
+    .then(({message}) => {
+      this.revokeToken();
+      Game.container().innerHTML = '';
+      Review.container().innerHTML = '';
+      Auth.container.innerHTML = this.loggedOutNavbar().outerHTML;
+      Auth.current_user = null;
+      new FlashMessage({type: 'success', message})
+        })
+        .catch(message => new FlashMessage({type: 'error', message}));
+    }
+  
+
+  static signup({formData}) {
     return fetch('http://localhost:3000/signup', {
       method: 'POST',
       headers: {
@@ -192,6 +216,6 @@ class Auth {
       Modal.toggle();
       Game.all();
     })
-    .catch(({error}) => new FlashMessage({type: 'error', message: error}))
+    .catch(({status: {message}}) => new FlashMessage({type: 'error', message}))
   }
 }

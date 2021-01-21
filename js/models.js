@@ -84,7 +84,7 @@ class Game {
         }
       })
       .then(({id, reviewsAttributes}) => {
-        Review.loadFromList(id, reviewsAttributes)
+        Review.loadGame(id, reviewsAttributes)
         this.markActive()
       })
       .catch(error => {
@@ -175,7 +175,7 @@ class Review {
     return this.collection()[Review.active_game_id].find(review => review.id == id);
   }
 
-  static loadFromList(id, reviewsAttributes) {
+  static loadGame(id, reviewsAttributes) {
     Review.active_game_id = id;
     let reviews = reviewsAttributes.map(reviewAttributes => new Review(reviewAttributes));
     this.collection()[id] = reviews;
