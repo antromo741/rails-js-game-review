@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Video Games</title>
-
-<script>
-		//Javascript to toggle the menu
-		document.getElementById('nav-toggle').onclick = function(){
-			document.getElementById("nav-content").classList.toggle("hidden");
-		}
-	</script>
 <script src="https://kit.fontawesome.com/2be8953118.js" crossorigin="anonymous"></script>
 <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
@@ -82,11 +75,10 @@ nothing until it is hovered */
 </head>
 <body class="">
   <div class="header">
-    <navbar class="flex items-center justify-between flex-wrap bg-gray-800 p-6 fixed w-full z-10 top-0">
-      <div class="flex items-center flex-shrink-0 text-white mr-6">
+  <navbar class="flex items-center justify-between flex-wrap bg-gray-800 p-6 fixed w-full z-10 top-0">
+    <div class="flex items-center flex-shrink-0 text-white mr-6">
 			<span class="text-white text-2xl font-bold"><h2>Romulus Reviews</h2></span>
-     
-		</div>
+    </div>
 
 		<div class="block lg:hidden">
 			<button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-white hover:border-white">
@@ -94,50 +86,47 @@ nothing until it is hovered */
 			</button>
 		</div>
 
-		<div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block pt-6 lg:pt-0" id="nav-content">
-  <li class="inline-block py-2 px-4 text-white no-underline"><a class="active" href="#home">Home</a></li>
-  
-  <li class="inline-block py-2 px-4 text-white no-underline"><a href="#news">News</a></li>
-  
-      <li class="inline-block py-2 px-4 text-white no-underline dropdown">
-        <a href="javascript:void(0)" class="dropbtn">Nintendo</a>
-        <div class="dropdown-content">
-          <a href="#">Gamecube</a>
-          <a href="#">Wii U</a>
-          <a href="#">Switch</a>
-        </div>
-      </li>
-
-      <li class="inline-block py-2 px-4 text-white no-underline dropdown">
-        <a href="javascript:void(0)" class="dropbtn">Playstation</a>
-        <div class="dropdown-content">
-          <a href="#">PsVR</a>
-          <a href="#">Ps4</a>
-          <a href="#">Ps5</a>
-        </div>
-      </li>
+	<div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block pt-6 lg:pt-0" id="nav-content">
+  <ul class="list-reset lg:flex justify-end flex-1 items-center">
+    <li class="inline-block py-2 px-4 text-white no-underline"><a class="active" href="#home">Home</a></li>
+    <li class="inline-block py-2 px-4 text-white no-underline"><a href="#news">News</a></li>
     <li class="inline-block py-2 px-4 text-white no-underline dropdown">
-            <a href="javascript:void(0)" class="dropbtn">Xbox</a>
-              <div class="dropdown-content">
-              <a href="#">Xbox 360</a>
-              <a href="#">Xbox One</a>
-              <a href="#">Xbox Series X</a>
-          </div>
-          </li>
+      <a href="javascript:void(0)" class="dropbtn">Nintendo</a>
+      <div class="dropdown-content">
+        <a href="#">Gamecube</a>
+        <a href="#">Wii U</a>
+        <a href="#">Switch</a>
+      </div>
+    </li>
+    <li class="inline-block py-2 px-4 text-white no-underline dropdown">
+      <a href="javascript:void(0)" class="dropbtn">Playstation</a>
+      <div class="dropdown-content">
+        <a href="#">PsVR</a>
+        <a href="#">Ps4</a>
+        <a href="#">Ps5</a>
+      </div>
+    </li>
+    <li class="inline-block py-2 px-4 text-white no-underline dropdown">
+      <a href="javascript:void(0)" class="dropbtn">Xbox</a>
+        <div class="dropdown-content">
+        <a href="#">Xbox 360</a>
+        <a href="#">Xbox One</a>
+        <a href="#">Xbox Series X</a>
+    </div>
+    </li>
     <li class="inline-block py-2 px-4 text-white no-underline dropdown"><a href="#contact">Contact</a></li>
-    
     <li class="inline-block py-2 px-4 text-white no-underline dropdown" style="float:right"><a href="#about">About</a></li>
-    </ul>
-			</ul>
-		</div>
-      
-
+  </ul>
+	</div>
+  </div> 
+     
  <div class="flex items-center flex-shrink-0 text-white mr-6">
- <div id="auth" class="text-right"><a href="#" class="loginLink">Login <i class="text-3xl loginLink fas fa-user-alt"></i></a></div>
-      
+ <div id="auth" class="text-right"><a href="#" class="loginLink">Login <i class="text-3xl loginLink fas fa-user-alt"></i></a></div>     
  </navbar>
  </div>
  </div>
+
+ <!--containers-->
  <div class="container mx-auto sm:grid grid-cols-3 gap-4 my-4">
     <section id="flash" class="h-10 col-span-3 py-2 pl-4 opacity-0 transition-opacity duration-700"></section>
     <section id="gamesContainer" class="px-4 bg-teal-100 sm:min-h-screen rounded-md shadow">
@@ -239,6 +228,12 @@ nothing until it is hovered */
       </div>
     </div>
   </div>
+   <script>
+		//Javascript to toggle the menu
+		document.getElementById('nav-toggle').onclick = function(){
+			document.getElementById("nav-content").classList.toggle("hidden");
+		}
+</script>
   <script src="js/auth.js"></script>
   <script src="js/modal.js"></script>
   <script src="js/utilities.js"></script>
