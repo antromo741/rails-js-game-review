@@ -13,7 +13,7 @@ ul {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+  background-color: #;
   /* position: -webkit-sticky; Safari 
   position: sticky;
   top: 0;*/
@@ -73,9 +73,9 @@ nothing until it is hovered */
 }
 </style>
 </head>
-<body class="">
-  <div class="header">
-  <navbar class="flex items-center justify-between flex-wrap bg-gray-800 p-6 fixed w-full z-10 top-0">
+<body class="bg-grey-light font-sans leading-normal tracking-normal">
+  
+  <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6 sticky w-full z-10 top-0">
     <div class="flex items-center flex-shrink-0 text-white mr-6">
 			<span class="text-white text-2xl font-bold"><h2>Romulus Reviews</h2></span>
     </div>
@@ -118,17 +118,18 @@ nothing until it is hovered */
     <li class="inline-block py-2 px-4 text-white no-underline dropdown" style="float:right"><a href="#about">About</a></li>
   </ul>
 	</div>
-  </div> 
+   
      
  <div class="flex items-center flex-shrink-0 text-white mr-6">
  <div id="auth" class="text-right"><a href="#" class="loginLink">Login <i class="text-3xl loginLink fas fa-user-alt"></i></a></div>     
- </navbar>
+ </nav>
  </div>
- </div>
+
 
  <!--containers-->
  <div class="container mx-auto sm:grid grid-cols-3 gap-4 my-4">
     <section id="flash" class="h-10 col-span-3 py-2 pl-4 opacity-0 transition-opacity duration-700"></section>
+    
     <section id="gamesContainer" class="px-4 bg-teal-100 sm:min-h-screen rounded-md shadow">
       <h1 class="text-2xl semibold border-b-4 border-teal">Games</h1>
       <form id="newGame" class="flex mt-4">
