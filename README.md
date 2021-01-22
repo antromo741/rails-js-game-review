@@ -19,7 +19,8 @@ It is simply to be used to test small changes and to see how certain functions w
 Once the my_index is open in the browser and all the servers are running you will be shown a static page, that updates with javascript.\
 To use the game reviews app, first login using the login button to the right, the original login info that has access to the seeded data from the back-end of the app has a
 
-Username: test@test.com, and a password: password\
+Username: test@test.com\
+and a password: password\
 You can always signup and create your own data of course.\
 After that you will have authentication to make fetch requests and get some data on the screen.\
 If you have seeded data from the backend you will see 3 games with reviews already.\
