@@ -16,6 +16,7 @@ In the terminal use the command line to run explorer.exe my_index.html to open t
 Test_index is not to be used and will not work properly with the finished version of the backend as many things are missing from it.\
 It is simply to be used to test small changes and to see how certain functions would work before I put them in my_index.
 
+## Usage
 Once the my_index is open in the browser and all the servers are running you will be shown a static page, that updates with javascript.\
 To use the game reviews app, first login using the login button to the right, the original login info that has access to the seeded data from the back-end of the app has a,
 
