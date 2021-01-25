@@ -83,7 +83,7 @@ class Auth {
       .then(res => {
       if (res.ok) {
           return res.json();
-      } else{
+      } else {
           return res.text().then(error => Promise.reject(error));
       }
     })
