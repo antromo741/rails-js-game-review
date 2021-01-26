@@ -27,7 +27,7 @@ class Auth {
       })
       .catch(error => {
         Auth.current_user = null;
-        this.conatiner().innerHTML = this.loggedOutNavbar().outerHTML;
+        this.container().innerHTML = this.loggedOutNavbar().outerHTML;
       })
   }
 
@@ -182,7 +182,7 @@ class Auth {
       this.revokeToken();
       Game.container().innerHTML = '';
       Review.container().innerHTML = '';
-      Auth.container.innerHTML = this.loggedOutNavbar().outerHTML;
+      Auth.container().innerHTML = this.loggedOutNavbar().outerHTML;
       Auth.current_user = null;
       new FlashMessage({type: 'success', message})
         })
@@ -190,7 +190,7 @@ class Auth {
     }
   
 
-  static signup({formData}) {
+  static signup(formData) {
     return fetch('http://localhost:3000/signup', {
       method: 'POST',
       headers: {

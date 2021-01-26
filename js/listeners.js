@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(e) {
-    Game.all();
-    Modal.init();
+  Auth.init();
+  Game.all();
+  Modal.init();
 })
 
 document.addEventListener('click', function(e) {

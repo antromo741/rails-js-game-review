@@ -21,7 +21,7 @@ class Game {
   
   /*
   Game.all() will return a promise for all of the game objects that we get from fetching the game
-  this collection will be stored locally in game.collection so we can refernce it after yhe 
+  this collection will be stored locally in game.collection so we can refernce it after the 
   intial call to Game.all() which will occur at the DOMContentLoaded event
   */
   static all() {
