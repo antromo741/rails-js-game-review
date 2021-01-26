@@ -125,7 +125,19 @@ class Review {
     let whitelist = ["id", "name", "game_id", "review_post"]
       whitelist.forEach(attr => this[attr] = attributes[attr])
   }
-  
+ 
+  static all() {
+    console.log(this);
+    return Auth.fetch("http://localhost:3000/reviews")
+    .then(reviewArray => {
+      this.collection = reviewArray.map(attrs => new Review(attrs))
+      let renderedReviews = this.collection.map(review => review.render())
+      this.container().append(...renderedReviews);
+        return this.collection
+    })
+    .catch(error => new FlashMessage(error));
+  }
+
   static collection() {
     return this.coll ||= {};
   }
@@ -248,8 +260,12 @@ class Review {
     this.deleteLink ||= document.createElement('a');
     this.deleteLink.classList.set("my-1 text-right");
     this.deleteLink.innerHTML = `<i class="deleteReviewForm p-4 fa fa-trash-alt" data-review-id="${this.id}"></i>`;
+    
+    this.reviewAllLink ||= document.createElement('button')
+    this.reviewAllLink.classList.set("my-1 text-right");
+    this.reviewAllLink.innerHTML = `<i class="allReviews p-4 fa fa-pencil-alt" data-review-id="${this.id}"></i>`;
 
-    this.element.append(this.gamePadLink, this.nameSpan, this.editLink, this.deleteLink);
+    this.element.append( this.gamePadLink, this.nameSpan, this.editLink, this.deleteLink, this.reviewAllLink);
 
     return this.element;
   }

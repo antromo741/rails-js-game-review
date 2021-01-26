@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
   Modal.init();
 })
 
+
 document.addEventListener('click', function(e) {
     let target = e.target;
   
@@ -31,6 +32,11 @@ document.addEventListener('click', function(e) {
           let review = Review.findById(target.dataset.reviewId);
           review.delete();
         }
+        } else if(target.matches(".allReviews")) {
+          if(confirm("This will display all the reviews.")) {
+            let review = Review.all();
+            
+          }
       } else if (target.matches('.multi-submit[type="submit"]')) {
         e.preventDefault();
           let form = target.closest('form');
